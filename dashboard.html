@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - Blueberry Math + SESI</title>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+  
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+  
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  
+  <!-- Blueberry Backend -->
+  <script src="js/blueberry-backend.js"></script>
+  
+  <!-- Seu CSS -->
+  <link rel="stylesheet" href="css/style.css">
+  
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #F4F5F7;
+      margin: 0;
+      padding: 0;
+    }
+    
+    .dashboard-header {
+      background: linear-gradient(135deg, #0052CC 0%, #003D99 100%);
+      color: white;
+      padding: 24px 0;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .dashboard-header .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .dashboard-header h1 {
+      margin: 0;
+      font-size: 24px;
+      font-weight: 700;
+    }
+    
+    .header-actions {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+    }
+    
+    .btn-logout {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+    
+    .btn-logout:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+    
+    .dashboard-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 32px 24px;
+    }
+    
+    .user-info-card {
+      background: white;
+      border-radius: 12px;
+      padding: 32px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      margin-bottom: 32px;
+    }
+    
+    .user-info-card h2 {
+      color: #172B4D;
+      font-size: 20px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .user-info-card h2 i {
+      color: #0052CC;
+    }
+    
+    .user-details {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 24px;
+    }
+    
+    .user-detail {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    
+    .user-detail label {
+      color: #6B778C;
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .user-detail span {
+      color: #172B4D;
+      font-size: 16px;
+      font-weight: 600;
+    }
+    
+    .badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    
+    .badge-professor {
+      background: #E3FCEF;
+      color: #00875A;
+    }
+    
+    .badge-admin {
+      background: #FFEBE6;
+      color: #DE350B;
+    }
+    
+    .badge-ponto-focal {
+      background: #DEEBFF;
+      color: #0052CC;
+    }
+    
+    .quick-actions {
+      margin-top: 32px;
+    }
+    
+    .quick-actions h3 {
+      color: #172B4D;
+      font-size: 18px;
+      margin-bottom: 16px;
+    }
+    
+    .actions-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+    }
+    
+    .action-card {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      text-decoration: none;
+      color: inherit;
+      transition: all 0.3s;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    
+    .action-card:hover {
+      box-shadow: 0 4px 16px rgba(0, 82, 204, 0.2);
+      transform: translateY(-2px);
+    }
+    
+    .action-card-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+    }
+    
+    .action-card-icon.blue {
+      background: #DEEBFF;
+      color: #0052CC;
+    }
+    
+    .action-card-icon.green {
+      background: #E3FCEF;
+      color: #00875A;
+    }
+    
+    .action-card-icon.orange {
+      background: #FFEBE6;
+      color: #FF6B00;
+    }
+    
+    .action-card-icon.purple {
+      background: #EAE6FF;
+      color: #6554C0;
+    }
+    
+    .action-card h4 {
+      color: #172B4D;
+      font-size: 16px;
+      margin: 0;
+      font-weight: 700;
+    }
+    
+    .action-card p {
+      color: #6B778C;
+      font-size: 14px;
+      margin: 0;
+      line-height: 1.5;
+    }
+    
+    .progress-section {
+      background: white;
+      border-radius: 12px;
+      padding: 32px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      margin-top: 32px;
+    }
+    
+    .progress-section h3 {
+      color: #172B4D;
+      font-size: 18px;
+      margin-bottom: 24px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .progress-section h3 i {
+      color: #0052CC;
+    }
+    
+    .certification-progress {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+    
+    .cert-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    
+    .cert-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      flex-shrink: 0;
+    }
+    
+    .cert-icon.bronze {
+      background: #DEEBFF;
+      color: #0052CC;
+    }
+    
+    .cert-icon.silver {
+      background: #F4F5F7;
+      color: #6B778C;
+    }
+    
+    .cert-icon.gold {
+      background: #FFF0B3;
+      color: #FF991F;
+    }
+    
+    .cert-info {
+      flex: 1;
+    }
+    
+    .cert-info h4 {
+      margin: 0 0 8px 0;
+      color: #172B4D;
+      font-size: 16px;
+      font-weight: 700;
+    }
+    
+    .cert-status {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    
+    .cert-status.completed {
+      background: #E3FCEF;
+      color: #00875A;
+    }
+    
+    .cert-status.locked {
+      background: #F4F5F7;
+      color: #6B778C;
+    }
+    
+    .cert-status.in-progress {
+      background: #FFF0B3;
+      color: #FF8B00;
+    }
+    
+    @media (max-width: 768px) {
+      .dashboard-header .container {
+        flex-direction: column;
+        gap: 16px;
+        align-items: flex-start;
+      }
+      
+      .user-details {
+        grid-template-columns: 1fr;
+      }
+      
+      .actions-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Proteger rota - redirecionar se não logado -->
+  <script>
+    if (window.blueberry && window.blueberry.requireAuth) {
+      window.blueberry.requireAuth('login.html');
+    }
+  </script>
+  
+  <!-- Header -->
+  <header class="dashboard-header">
+    <div class="container">
+      <h1>
+        <i class="fas fa-chart-line"></i>
+        Painel do Professor
+      </h1>
+      <div class="header-actions">
+        <button class="btn-logout" onclick="handleLogout()">
+          <i class="fas fa-sign-out-alt"></i>
+          Sair
+        </button>
+      </div>
+    </div>
+  </header>
+  
+  <!-- Dashboard Container -->
+  <div class="dashboard-container">
+    
+    <!-- User Info Card -->
+    <div class="user-info-card">
+      <h2>
+        <i class="fas fa-user-circle"></i>
+        Informações do Perfil
+      </h2>
+      <div class="user-details" id="userInfo">
+        <!-- Será preenchido via JavaScript -->
+      </div>
+    </div>
+    
+    <!-- Quick Actions -->
+    <div class="quick-actions">
+      <h3>Acesso Rápido</h3>
+      <div class="actions-grid">
+        
+        <a href="bronze.html" class="action-card">
+          <div class="action-card-icon blue">
+            <i class="fas fa-medal"></i>
+          </div>
+          <h4>Certificação Bronze</h4>
+          <p>Formação Inicial - Módulos de Treinamento em Vídeo</p>
+        </a>
+        
+        <a href="prata.html" class="action-card">
+          <div class="action-card-icon green">
+            <i class="fas fa-trophy"></i>
+          </div>
+          <h4>Certificação Prata</h4>
+          <p>Aprofundamento Pedagógico - Em desenvolvimento</p>
+        </a>
+        
+        <a href="ouro.html" class="action-card">
+          <div class="action-card-icon orange">
+            <i class="fas fa-crown"></i>
+          </div>
+          <h4>Certificação Ouro</h4>
+          <p>Liderança e Multiplicação - Em desenvolvimento</p>
+        </a>
+        
+        <a href="suporte.html" class="action-card">
+          <div class="action-card-icon purple">
+            <i class="fas fa-headset"></i>
+          </div>
+          <h4>Suporte Técnico</h4>
+          <p>FAQ, Problemas Conhecidos e Reportar Erros</p>
+        </a>
+        
+      </div>
+    </div>
+    
+    <!-- Progress Section -->
+    <div class="progress-section">
+      <h3>
+        <i class="fas fa-tasks"></i>
+        Seu Progresso na Trilha
+      </h3>
+      <div class="certification-progress" id="progressInfo">
+        <!-- Será preenchido via JavaScript -->
+      </div>
+    </div>
+    
+  </div>
+  
+  <script>
+    // Função para obter badge de role
+    function getRoleBadge(role) {
+      const roles = {
+        'professor': '<span class="badge badge-professor">Professor</span>',
+        'ponto-focal': '<span class="badge badge-ponto-focal">Ponto Focal</span>',
+        'admin': '<span class="badge badge-admin">Administrador</span>'
+      };
+      return roles[role] || '<span class="badge badge-professor">Usuário</span>';
+    }
+    
+    // Função para carregar informações do usuário
+    function loadUserInfo() {
+      try {
+        const user = window.blueberry.getCurrentUser();
+        
+        if (!user) {
+          window.location.href = 'login.html';
+          return;
+        }
+        
+        const userInfoHTML = `
+          <div class="user-detail">
+            <label>Nome Completo</label>
+            <span>${user.name || 'Não informado'}</span>
+          </div>
+          <div class="user-detail">
+            <label>E-mail</label>
+            <span>${user.email || 'Não informado'}</span>
+          </div>
+          <div class="user-detail">
+            <label>Escola SESI</label>
+            <span>${user.schoolName || 'Não definida'}</span>
+          </div>
+          <div class="user-detail">
+            <label>Perfil</label>
+            <span>${getRoleBadge(user.role)}</span>
+          </div>
+        `;
+        
+        document.getElementById('userInfo').innerHTML = userInfoHTML;
+        
+      } catch (error) {
+        console.error('Erro ao carregar informações do usuário:', error);
+        document.getElementById('userInfo').innerHTML = `
+          <div class="user-detail">
+            <label>Erro</label>
+            <span style="color: #DE350B;">Não foi possível carregar suas informações.</span>
+          </div>
+        `;
+      }
+    }
+    
+    // Função para carregar progresso das certificações
+    function loadProgressInfo() {
+      try {
+        // Verificar localStorage para progresso
+        const completedLevels = JSON.parse(localStorage.getItem('blueberry-completed-levels') || '{}');
+        
+        const bronzeCompleted = completedLevels.bronze === true;
+        const prataCompleted = completedLevels.prata === true;
+        const ouroCompleted = completedLevels.ouro === true;
+        
+        const progressHTML = `
+          <div class="cert-item">
+            <div class="cert-icon bronze">
+              <i class="fas fa-medal"></i>
+            </div>
+            <div class="cert-info">
+              <h4>Certificação Bronze</h4>
+              <span class="cert-status ${bronzeCompleted ? 'completed' : 'in-progress'}">
+                ${bronzeCompleted ? '✓ Concluída' : 'Em Progresso'}
+              </span>
+            </div>
+          </div>
+          
+          <div class="cert-item">
+            <div class="cert-icon silver">
+              <i class="fas fa-trophy"></i>
+            </div>
+            <div class="cert-info">
+              <h4>Certificação Prata</h4>
+              <span class="cert-status ${prataCompleted ? 'completed' : (bronzeCompleted ? 'in-progress' : 'locked')}">
+                ${prataCompleted ? '✓ Concluída' : (bronzeCompleted ? 'Disponível' : '🔒 Bloqueada')}
+              </span>
+            </div>
+          </div>
+          
+          <div class="cert-item">
+            <div class="cert-icon gold">
+              <i class="fas fa-crown"></i>
+            </div>
+            <div class="cert-info">
+              <h4>Certificação Ouro</h4>
+              <span class="cert-status ${ouroCompleted ? 'completed' : (prataCompleted ? 'in-progress' : 'locked')}">
+                ${ouroCompleted ? '✓ Concluída' : (prataCompleted ? 'Disponível' : '🔒 Bloqueada')}
+              </span>
+            </div>
+          </div>
+        `;
+        
+        document.getElementById('progressInfo').innerHTML = progressHTML;
+        
+      } catch (error) {
+        console.error('Erro ao carregar progresso:', error);
+        document.getElementById('progressInfo').innerHTML = `
+          <p style="color: #6B778C; text-align: center;">Não foi possível carregar seu progresso.</p>
+        `;
+      }
+    }
+    
+    // Função para fazer logout
+    function handleLogout() {
+      if (window.blueberry && window.blueberry.logout) {
+        window.blueberry.logout();
+      }
+      window.location.href = 'login.html';
+    }
+    
+    // Carregar dados ao inicializar
+    document.addEventListener('DOMContentLoaded', function() {
+      // Aguardar um pouco para garantir que o backend foi carregado
+      setTimeout(() => {
+        loadUserInfo();
+        loadProgressInfo();
+      }, 500);
+    });
+  </script>
+  
+</body>
+</html>

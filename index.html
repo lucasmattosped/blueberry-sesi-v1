@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Trilha de Formação Blueberry Math + SESI - Certificações progressivas (Bronze, Prata e Ouro) para professores SESI.">
+  <meta name="keywords" content="Blueberry Math, SESI, formação, certificação, educação, professores">
+  <meta name="author" content="Oneclick">
+  
+  <title>Trilha de Formação Blueberry Math + SESI</title>
+  
+  <!-- Favicon (placeholder) -->
+  <link rel="icon" type="image/png" href="images/favicon.png">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+  
+  <!-- Font Awesome para ícones -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+  
+  <!-- CSS Principal -->
+  <link rel="stylesheet" href="css/style.css">
+  
+  <!-- ============================================================ -->
+  <!-- FIREBASE SDK - Scripts obrigatórios -->
+  <!-- ============================================================ -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  
+  <!-- ============================================================ -->
+  <!-- BLUEBERRY BACKEND - Sistema de certificação -->
+  <!-- ============================================================ -->
+  <script src="js/blueberry-backend.js"></script>
+</head>
+<body>
+  
+  <!-- Skip Link para Acessibilidade -->
+  <a href="#main-content" class="skip-link">Pular para o conteúdo principal</a>
+
+  <!-- ============================================
+       HEADER E NAVEGAÇÃO
+       ============================================ -->
+  <header class="site-header">
+    <div class="container">
+      <div class="header-content">
+        
+        <!-- Logos e Branding -->
+        <div class="header-brand">
+          <div class="header-logos">
+            <img src="images/logos/logo-blueberry.png" alt="Blueberry Math" class="logo-img logo-blueberry">
+            <span class="logo-separator">+</span>
+            <img src="images/logos/logo-sesi.png" alt="SESI - Serviço Social da Indústria" class="logo-img logo-sesi">
+          </div>
+          <p class="header-tagline">Educação & Tecnologia</p>
+        </div>
+
+        <!-- Navegação Principal -->
+        <nav class="main-nav" aria-label="Navegação principal">
+          <ul class="main-nav-list">
+            <li><a href="index.html" class="main-nav-link active" aria-current="page">Início</a></li>
+            <li><a href="bronze.html" class="main-nav-link">Bronze</a></li>
+            <li>
+              <a href="prata.html" class="main-nav-link disabled" data-level="prata" aria-disabled="true">
+                Prata
+              </a>
+            </li>
+            <li>
+              <a href="ouro.html" class="main-nav-link disabled" data-level="ouro" aria-disabled="true">
+                Ouro
+              </a>
+            </li>
+            <li><a href="suporte.html" class="main-nav-link">Suporte</a></li>
+          </ul>
+        </nav>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- ============================================
+       MAIN CONTENT
+       ============================================ -->
+  <main id="main-content">
+
+    <!-- HERO SECTION -->
+    <section class="hero">
+      <div class="container">
+        <h1 class="hero-title">Trilha de Formação Blueberry</h1>
+        <p class="hero-subtitle">
+          Programa de certificação progressiva para professores SESI, 
+          estruturado em três níveis que respeitam sua curva de aprendizagem 
+          e garantem competências específicas em cada etapa.
+        </p>
+        <a href="bronze.html" class="btn btn-cta btn-large">
+          <i class="fas fa-play-circle"></i>
+          Começar pela Certificação Bronze
+        </a>
+      </div>
+    </section>
+
+    <!-- VISÃO GERAL DA TRILHA -->
+    <section class="section section-bg-white">
+      <div class="container container-narrow">
+        <h2 class="text-center mb-lg">Visão Geral da Trilha</h2>
+        
+        <div class="callout callout-info">
+          <h3>Progressão Estruturada</h3>
+          <p>
+            A trilha de formação Blueberry está organizada em <strong>três níveis progressivos</strong> 
+            (Bronze, Prata e Ouro), respeitando a curva de aprendizagem dos professores e da rede SESI.
+          </p>
+          <p class="mb-0">
+            <strong>Princípio fundamental:</strong> Cada certificação habilita competências específicas, 
+            <em>sem sobreposição de papéis ou exigências antecipadas</em>.
+          </p>
+        </div>
+
+        <div class="mt-xl">
+          <h3 class="mb-md">Como funciona a progressão?</h3>
+          <ul class="info-list">
+            <li>
+              <strong>Bronze (Obrigatória):</strong> Formação inicial para uso do Blueberry Math. 
+              Todos os professores devem completar este nível antes de avançar.
+            </li>
+            <li>
+              <strong>Prata:</strong> Nível intermediário desbloqueado após conclusão do Bronze. 
+              Aprofunda conhecimentos e técnicas pedagógicas.
+            </li>
+            <li>
+              <strong>Ouro:</strong> Nível avançado acessível após completar Prata. 
+              Capacita para liderança e multiplicação de conhecimento.
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- CARDS DAS CERTIFICAÇÕES -->
+    <section class="section section-bg-light">
+      <div class="container">
+        <h2 class="text-center mb-xl">Certificações Disponíveis</h2>
+
+        <div class="grid grid-3-col">
+          
+          <!-- CARD BRONZE -->
+          <article class="card">
+            <div class="card-header">
+              <div>
+                <span class="badge badge-bronze">Bronze</span>
+                <span class="badge badge-required">Obrigatória</span>
+              </div>
+            </div>
+            
+            <h3 class="card-title">Certificação Bronze</h3>
+            <p class="card-subtitle">Formação Inicial de Professores SESI</p>
+            
+            <div class="card-meta">
+              <span class="meta-item">
+                <i class="far fa-clock"></i>
+                3h a 4h
+              </span>
+              <span class="meta-item">
+                <i class="fas fa-user-graduate"></i>
+                Nível Inicial
+              </span>
+            </div>
+
+            <div class="card-body">
+              <p><strong>Finalidade:</strong></p>
+              <p>Onboarding técnico e pedagógico inicial para uso do Blueberry Math.</p>
+              
+              <p class="mt-md"><strong>Você vai aprender:</strong></p>
+              <ul>
+                <li>Compreender o papel do Blueberry no contexto pedagógico SESI</li>
+                <li>Navegar pela plataforma com autonomia</li>
+                <li>Aplicar recursos básicos em sala de aula</li>
+              </ul>
+            </div>
+
+            <div class="card-footer">
+              <a href="bronze.html" class="btn btn-primary btn-block">
+                <i class="fas fa-arrow-right"></i>
+                Acessar Certificação Bronze
+              </a>
+            </div>
+          </article>
+
+          <!-- CARD PRATA -->
+          <article class="card">
+            <div class="card-header">
+              <div>
+                <span class="badge badge-prata">Prata</span>
+                <span class="badge badge-optional">Opcional</span>
+              </div>
+            </div>
+            
+            <h3 class="card-title">Certificação Prata</h3>
+            <p class="card-subtitle">Aprofundamento Pedagógico</p>
+            
+            <div class="card-meta">
+              <span class="meta-item">
+                <i class="far fa-clock"></i>
+                Em breve
+              </span>
+              <span class="meta-item">
+                <i class="fas fa-user-graduate"></i>
+                Nível Intermediário
+              </span>
+            </div>
+
+            <div class="card-body">
+              <p><strong>Requisito:</strong></p>
+              <p class="text-muted">
+                <i class="fas fa-lock"></i>
+                Completar a Certificação Bronze
+              </p>
+              
+              <p class="mt-md"><strong>O que esperar:</strong></p>
+              <ul class="text-muted">
+                <li>Técnicas avançadas de aplicação</li>
+                <li>Análise de dados pedagógicos</li>
+                <li>Personalização de atividades</li>
+              </ul>
+            </div>
+
+            <div class="card-footer">
+              <button class="btn btn-disabled btn-block" data-level="prata" disabled>
+                <i class="fas fa-lock"></i>
+                Completar Bronze para Desbloquear
+              </button>
+            </div>
+          </article>
+
+          <!-- CARD OURO -->
+          <article class="card">
+            <div class="card-header">
+              <div>
+                <span class="badge badge-ouro">Ouro</span>
+                <span class="badge badge-optional">Opcional</span>
+              </div>
+            </div>
+            
+            <h3 class="card-title">Certificação Ouro</h3>
+            <p class="card-subtitle">Liderança e Multiplicação</p>
+            
+            <div class="card-meta">
+              <span class="meta-item">
+                <i class="far fa-clock"></i>
+                Em breve
+              </span>
+              <span class="meta-item">
+                <i class="fas fa-user-graduate"></i>
+                Nível Avançado
+              </span>
+            </div>
+
+            <div class="card-body">
+              <p><strong>Requisito:</strong></p>
+              <p class="text-muted">
+                <i class="fas fa-lock"></i>
+                Completar a Certificação Prata
+              </p>
+              
+              <p class="mt-md"><strong>O que esperar:</strong></p>
+              <ul class="text-muted">
+                <li>Formação de multiplicadores</li>
+                <li>Liderança pedagógica</li>
+                <li>Estratégias de implementação em rede</li>
+              </ul>
+            </div>
+
+            <div class="card-footer">
+              <button class="btn btn-disabled btn-block" data-level="ouro" disabled>
+                <i class="fas fa-lock"></i>
+                Completar Prata para Desbloquear
+              </button>
+            </div>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- TIP BOX - DICA IMPORTANTE -->
+    <section class="section section-bg-white">
+      <div class="container container-narrow">
+        <aside class="tip-box">
+          <div class="tip-box-header">
+            <i class="fas fa-lightbulb tip-box-icon"></i>
+            <h3 class="tip-box-title">Dica do Especialista</h3>
+          </div>
+          <div class="tip-box-content">
+            <p>
+              <strong>Organize sua jornada:</strong> Recomendamos criar um caderno de anotações 
+              (físico ou digital) para registrar insights, dúvidas e ideias de aplicação durante 
+              cada módulo. Isso facilitará sua prática em sala de aula e servirá como referência 
+              para compartilhar experiências com colegas.
+            </p>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ACESSO RÁPIDO -->
+    <section class="section section-bg-light">
+      <div class="container">
+        <h2 class="text-center mb-xl">Recursos e Suporte</h2>
+
+        <div class="grid grid-2-col">
+          
+          <!-- CARD SUPORTE TÉCNICO -->
+          <article class="card">
+            <div class="card-header">
+              <i class="fas fa-headset" style="font-size: 2rem; color: var(--primary-blue);"></i>
+            </div>
+            
+            <h3 class="card-title">Suporte Técnico</h3>
+            <p class="card-subtitle">Reporte de Erros e Dúvidas</p>
+            
+            <div class="card-body">
+              <p>
+                Encontrou algum problema técnico na plataforma? Precisa de ajuda com acesso 
+                ou funcionalidades? Nossa equipe está pronta para auxiliar.
+              </p>
+              <ul class="info-list mt-md">
+                <li>Como reportar erros à equipe One Click</li>
+                <li>Problemas conhecidos e soluções</li>
+                <li>Canais de comunicação</li>
+              </ul>
+            </div>
+
+            <div class="card-footer">
+              <a href="suporte.html" class="btn btn-secondary btn-block">
+                <i class="fas fa-question-circle"></i>
+                Acessar Suporte
+              </a>
+            </div>
+          </article>
+
+          <!-- CARD GUIA DO RESPONSÁVEL PEDAGÓGICO -->
+          <article class="card">
+            <div class="card-header">
+              <i class="fas fa-book-open" style="font-size: 2rem; color: var(--primary-blue);"></i>
+            </div>
+            
+            <h3 class="card-title">Guia do Responsável Pedagógico</h3>
+            <p class="card-subtitle">Orientações para Gestão</p>
+            
+            <div class="card-body">
+              <p>
+                Material de apoio para Responsáveis Pedagógicos e Pontos Focais das escolas 
+                que acompanham a implementação do Blueberry Math.
+              </p>
+              <ul class="info-list mt-md">
+                <li>Fluxo de reuniões e acompanhamento</li>
+                <li>Análise de dados e indicadores</li>
+                <li>Estratégias de engajamento</li>
+              </ul>
+            </div>
+
+            <div class="card-footer">
+              <a href="responsavel-pedagogico.html" class="btn btn-secondary btn-block">
+                <i class="fas fa-file-alt"></i>
+                Acessar Guia
+              </a>
+            </div>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- CHAMADA FINAL PARA AÇÃO -->
+    <section class="section section-bg-white">
+      <div class="container container-narrow text-center">
+        <h2 class="mb-md">Pronto para Começar?</h2>
+        <p class="text-lg mb-lg">
+          Inicie sua jornada pela Certificação Bronze e descubra como o Blueberry Math 
+          pode transformar suas aulas de matemática.
+        </p>
+        <a href="bronze.html" class="btn btn-cta btn-large">
+          <i class="fas fa-play-circle"></i>
+          Iniciar Certificação Bronze
+        </a>
+        <p class="text-muted mt-md" style="font-size: 0.875rem;">
+          <i class="fas fa-clock"></i>
+          Tempo estimado: 3 a 4 horas | 
+          <i class="fas fa-certificate"></i>
+          Certificado ao concluir
+        </p>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ============================================
+       FOOTER
+       ============================================ -->
+  <footer class="site-footer">
+    <div class="container">
+      
+      <div class="footer-content">
+        
+        <!-- Coluna 1: Sobre -->
+        <div>
+          <h3 class="footer-section-title">Sobre a Trilha</h3>
+          <p style="color: var(--neutral-300); line-height: 1.6;">
+            Programa de certificação progressiva desenvolvido para professores SESI, 
+            integrando tecnologia educacional Blueberry Math com práticas pedagógicas comprovadas.
+          </p>
+        </div>
+
+        <!-- Coluna 2: Links Rápidos -->
+        <div>
+          <h3 class="footer-section-title">Links Rápidos</h3>
+          <ul class="footer-links">
+            <li><a href="index.html" class="footer-link">Início</a></li>
+            <li><a href="bronze.html" class="footer-link">Certificação Bronze</a></li>
+            <li><a href="prata.html" class="footer-link">Certificação Prata</a></li>
+            <li><a href="ouro.html" class="footer-link">Certificação Ouro</a></li>
+            <li><a href="suporte.html" class="footer-link">Suporte Técnico</a></li>
+          </ul>
+        </div>
+
+        <!-- Coluna 3: Recursos -->
+        <div>
+          <h3 class="footer-section-title">Recursos</h3>
+          <ul class="footer-links">
+            <li><a href="responsavel-pedagogico.html" class="footer-link">Guia do Responsável Pedagógico</a></li>
+            <li><a href="downloads/documentos-oficiais/playbook-ponto-focal.pdf" class="footer-link" download>Playbook do Ponto Focal (PDF)</a></li>
+            <li><a href="downloads/documentos-oficiais/matriz-formacao-blueberry.pdf" class="footer-link" download>Matriz de Formação (PDF)</a></li>
+            <li><a href="suporte.html#faq" class="footer-link">FAQ</a></li>
+          </ul>
+        </div>
+
+        <!-- Coluna 4: Contato -->
+        <div>
+          <h3 class="footer-section-title">Contato</h3>
+          <ul class="footer-links">
+            <li>
+              <a href="mailto:soporte.brasil@oneclick.es" class="footer-link">
+                <i class="far fa-envelope"></i> soporte.brasil@oneclick.es
+              </a>
+            </li>
+            <li>
+              <span style="color: var(--neutral-300);">
+                <i class="fas fa-building"></i> SESI - Serviço Social da Indústria
+              </span>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+
+      <!-- Footer Bottom -->
+      <div class="footer-bottom">
+        <p>&copy; 2024 SESI - Serviço Social da Indústria. Todos os direitos reservados.</p>
+        <p class="footer-credits">
+          Desenvolvido por 
+          <a href="https://oneclick.es/pt/" target="_blank" rel="noopener noreferrer" style="display: inline-flex; align-items: center; gap: 0.5rem;">
+            <img src="images/logos/logo-oneclick.png" alt="Oneclick" style="height: 20px; width: auto; vertical-align: middle;">
+          </a>
+          | Blueberry Math
+        </p>
+      </div>
+
+    </div>
+  </footer>
+
+  <!-- ============================================
+       JAVASCRIPT
+       ============================================ -->
+  <script src="js/main.js"></script>
+
+</body>
+</html>

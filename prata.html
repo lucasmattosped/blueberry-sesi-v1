@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Certificação Prata - Aprofundamento Pedagógico para professores SESI no Blueberry Math.">
+  <meta name="keywords" content="Blueberry Math, SESI, certificação prata, formação, educação, professores">
+  <meta name="author" content="Oneclick">
+  
+  <title>Certificação Prata | Trilha de Formação Blueberry</title>
+  
+  <!-- Favicon (placeholder) -->
+  <link rel="icon" type="image/png" href="images/favicon.png">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+  
+  <!-- Font Awesome para ícones -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+  
+  <!-- CSS Principal -->
+  <link rel="stylesheet" href="css/style.css">
+  
+  <!-- ============================================================ -->
+  <!-- FIREBASE SDK - Scripts obrigatórios -->
+  <!-- ============================================================ -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  
+  <!-- ============================================================ -->
+  <!-- BLUEBERRY BACKEND - Sistema de certificação -->
+  <!-- ============================================================ -->
+  <script src="js/blueberry-backend.js"></script>
+  
+  <!-- ============================================================ -->
+  <!-- PROTEÇÃO DE ROTA - Exigir Bronze concluído -->
+  <!-- ============================================================ -->
+  <script>
+    // Verificar se Bronze foi concluído
+    document.addEventListener('DOMContentLoaded', function() {
+      if (typeof window.blueberry !== 'undefined') {
+        window.blueberry.requireLevel('prata', 'dashboard.html');
+      }
+    });
+  </script>
+</head>
+<body>
+  
+  <!-- Skip Link para Acessibilidade -->
+  <a href="#main-content" class="skip-link">Pular para o conteúdo principal</a>
+
+  <!-- ============================================
+       HEADER E NAVEGAÇÃO
+       ============================================ -->
+  <header class="site-header">
+    <div class="container">
+      <div class="header-content">
+        
+        <!-- Logos e Branding -->
+        <div class="header-brand">
+          <div class="header-logos">
+            <img src="images/logos/logo-blueberry.png" alt="Blueberry Math" class="logo-img logo-blueberry">
+            <span class="logo-separator">+</span>
+            <img src="images/logos/logo-sesi.png" alt="SESI - Serviço Social da Indústria" class="logo-img logo-sesi">
+          </div>
+          <p class="header-tagline">Educação & Tecnologia</p>
+        </div>
+
+        <!-- Navegação Principal -->
+        <nav class="main-nav" aria-label="Navegação principal">
+          <ul class="main-nav-list">
+            <li><a href="index.html" class="main-nav-link">Início</a></li>
+            <li><a href="bronze.html" class="main-nav-link">Bronze</a></li>
+            <li><a href="prata.html" class="main-nav-link active" aria-current="page">Prata</a></li>
+            <li>
+              <a href="ouro.html" class="main-nav-link disabled" data-level="ouro" aria-disabled="true">
+                Ouro
+              </a>
+            </li>
+            <li><a href="suporte.html" class="main-nav-link">Suporte</a></li>
+          </ul>
+        </nav>
+
+      </div>
+    </div>
+  </header>
+
+  <!-- ============================================
+       MAIN CONTENT
+       ============================================ -->
+  <main id="main-content">
+
+    <!-- CABEÇALHO DA CERTIFICAÇÃO -->
+    <section class="section section-bg-light" style="padding-top: 3rem; padding-bottom: 2rem;">
+      <div class="container container-narrow">
+        
+        <!-- Badges e Meta -->
+        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1rem;">
+          <span class="badge badge-prata">Prata</span>
+          <span class="badge badge-optional">Opcional</span>
+          <span class="badge" style="background: var(--neutral-200); color: var(--neutral-800);">
+            <i class="far fa-clock"></i> Em breve
+          </span>
+        </div>
+
+        <!-- Título Principal -->
+        <h1 style="margin-bottom: 1rem;">Certificação Prata</h1>
+        <p class="text-lg text-muted" style="margin-bottom: 2rem;">
+          Aprofundamento Pedagógico
+        </p>
+
+        <!-- Requisito -->
+        <div id="requirement-check" class="callout callout-warning">
+          <div style="display: flex; align-items: center; gap: 1rem;">
+            <i class="fas fa-lock" style="font-size: 1.5rem; flex-shrink: 0;"></i>
+            <div>
+              <strong>Requisito Não Atendido</strong>
+              <p class="mb-0">Você precisa completar a <strong>Certificação Bronze</strong> antes de acessar este nível.</p>
+            </div>
+          </div>
+          <a href="bronze.html" class="btn btn-primary mt-md">
+            <i class="fas fa-arrow-left"></i>
+            Voltar para Bronze
+          </a>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- CONTEÚDO PRINCIPAL (Visível apenas se Bronze completado) -->
+    <div id="prata-content" style="display: none;">
+
+      <!-- SOBRE A CERTIFICAÇÃO PRATA -->
+      <section class="section section-bg-white">
+        <div class="container container-narrow">
+          
+          <h2>
+            <i class="fas fa-medal" style="color: var(--neutral-500); margin-right: 0.5rem;"></i>
+            Sobre a Certificação Prata
+          </h2>
+
+          <p class="text-lg">
+            A Certificação Prata representa o <strong>nível intermediário</strong> da trilha de formação Blueberry. 
+            Neste estágio, você aprofundará seus conhecimentos técnicos e pedagógicos, indo além do uso básico da plataforma.
+          </p>
+
+          <div class="callout callout-info mt-lg">
+            <h3 style="margin-top: 0;">
+              <i class="fas fa-info-circle"></i> Conteúdo em Desenvolvimento
+            </h3>
+            <p>
+              O conteúdo detalhado da Certificação Prata está sendo desenvolvido pela equipe pedagógica. 
+              Em breve, você terá acesso a:
+            </p>
+            <ul class="info-list">
+              <li>Módulos de treinamento em vídeo</li>
+              <li>Técnicas avançadas de aplicação do Blueberry</li>
+              <li>Análise de dados pedagógicos e relatórios</li>
+              <li>Personalização de atividades para diferentes níveis</li>
+              <li>Estratégias de engajamento dos alunos</li>
+            </ul>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- O QUE ESPERAR -->
+      <section class="section section-bg-light">
+        <div class="container container-narrow">
+          
+          <h2>
+            <i class="fas fa-lightbulb" style="color: var(--primary-blue); margin-right: 0.5rem;"></i>
+            O que Esperar da Certificação Prata
+          </h2>
+
+          <p class="text-lg mb-lg">
+            Enquanto o conteúdo é finalizado, confira uma prévia dos temas que serão abordados:
+          </p>
+
+          <div class="grid grid-2-col" style="gap: 1.5rem;">
+            
+            <!-- Tema 1 -->
+            <div class="card" style="border-left: 4px solid var(--neutral-500);">
+              <h3 style="font-size: var(--font-size-md); margin-bottom: 0.5rem; color: var(--neutral-700);">
+                <i class="fas fa-chart-line"></i> Análise de Dados
+              </h3>
+              <p class="text-muted mb-0">
+                Aprenda a interpretar relatórios de desempenho, identificar padrões de aprendizagem 
+                e tomar decisões pedagógicas baseadas em dados.
+              </p>
+            </div>
+
+            <!-- Tema 2 -->
+            <div class="card" style="border-left: 4px solid var(--neutral-500);">
+              <h3 style="font-size: var(--font-size-md); margin-bottom: 0.5rem; color: var(--neutral-700);">
+                <i class="fas fa-sliders-h"></i> Personalização Avançada
+              </h3>
+              <p class="text-muted mb-0">
+                Domine técnicas de customização de atividades, criação de trilhas de aprendizagem 
+                e adaptação curricular para diferentes perfis de alunos.
+              </p>
+            </div>
+
+            <!-- Tema 3 -->
+            <div class="card" style="border-left: 4px solid var(--neutral-500);">
+              <h3 style="font-size: var(--font-size-md); margin-bottom: 0.5rem; color: var(--neutral-700);">
+                <i class="fas fa-users"></i> Engajamento Estudantil
+              </h3>
+              <p class="text-muted mb-0">
+                Estratégias para aumentar a participação, motivação e protagonismo dos alunos 
+                utilizando recursos gamificados da plataforma.
+              </p>
+            </div>
+
+            <!-- Tema 4 -->
+            <div class="card" style="border-left: 4px solid var(--neutral-500);">
+              <h3 style="font-size: var(--font-size-md); margin-bottom: 0.5rem; color: var(--neutral-700);">
+                <i class="fas fa-clipboard-check"></i> Avaliação Formativa
+              </h3>
+              <p class="text-muted mb-0">
+                Como usar a plataforma para avaliação contínua, feedback efetivo 
+                e acompanhamento individualizado do progresso dos alunos.
+              </p>
+            </div>
+
+          </div>
+
+        </div>
+      </section>
+
+      <!-- O QUE NÃO É EXIGIDO NA PRATA -->
+      <section class="section section-bg-white">
+        <div class="container container-narrow">
+          
+          <div class="callout callout-warning">
+            <h2 style="margin-top: 0;">
+              <i class="fas fa-ban" style="margin-right: 0.5rem;"></i>
+              O que NÃO é Exigido na Prata
+            </h2>
+            <p>
+              Mantendo o princípio de <strong>progressão formativa</strong>, os seguintes tópicos 
+              são exclusivos do <strong>Nível Ouro</strong>:
+            </p>
+            
+            <ul class="info-list">
+              <li>
+                <strong>Formação de multiplicadores</strong> - Capacitar outros professores e liderar workshops
+              </li>
+              <li>
+                <strong>Coordenação de múltiplas turmas</strong> - Gestão em escala e visão sistêmica
+              </li>
+              <li>
+                <strong>Estratégias de implementação em rede</strong> - Disseminação de boas práticas entre escolas
+              </li>
+              <li>
+                <strong>Liderança pedagógica</strong> - Atuação como referência e mentor para outros professores
+              </li>
+            </ul>
+
+            <p class="mb-0" style="font-style: italic; color: var(--neutral-700);">
+              <i class="fas fa-info-circle"></i>
+              Concentre-se em dominar as competências intermediárias. O Nível Ouro estará disponível após concluir a Prata.
+            </p>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- NOTIFICAÇÃO -->
+      <section class="section section-bg-light">
+        <div class="container container-narrow">
+          
+          <div style="text-align: center; padding: 3rem; background: white; border-radius: var(--radius-md); box-shadow: var(--shadow-md);">
+            <i class="fas fa-bell" style="font-size: 3rem; color: var(--primary-blue); margin-bottom: 1rem;"></i>
+            <h2 style="margin-bottom: 1rem;">Seja Notificado</h2>
+            <p class="text-lg mb-lg">
+              Quando o conteúdo completo da Certificação Prata estiver disponível, 
+              você será notificado via e-mail corporativo SESI.
+            </p>
+            
+            <p class="text-muted mb-0">
+              <i class="fas fa-envelope"></i>
+              Mantenha seus dados de contato atualizados no sistema
+            </p>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- NAVEGAÇÃO -->
+      <section class="section section-bg-white" style="padding: 2rem 0;">
+        <div class="container container-narrow">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+            
+            <a href="bronze.html" class="btn btn-secondary">
+              <i class="fas fa-arrow-left"></i>
+              Anterior: Bronze
+            </a>
+
+            <button class="btn btn-disabled" disabled data-level="ouro">
+              Próximo: Certificação Ouro
+              <i class="fas fa-arrow-right"></i>
+            </button>
+
+          </div>
+        </div>
+      </section>
+
+    </div>
+    <!-- FIM DO CONTEÚDO PRATA -->
+
+  </main>
+
+  <!-- ============================================
+       FOOTER
+       ============================================ -->
+  <footer class="site-footer">
+    <div class="container">
+      
+      <div class="footer-content">
+        
+        <!-- Coluna 1: Sobre -->
+        <div>
+          <h3 class="footer-section-title">Sobre a Trilha</h3>
+          <p style="color: var(--neutral-300); line-height: 1.6;">
+            Programa de certificação progressiva desenvolvido para professores SESI, 
+            integrando tecnologia educacional Blueberry Math com práticas pedagógicas comprovadas.
+          </p>
+        </div>
+
+        <!-- Coluna 2: Links Rápidos -->
+        <div>
+          <h3 class="footer-section-title">Links Rápidos</h3>
+          <ul class="footer-links">
+            <li><a href="index.html" class="footer-link">Início</a></li>
+            <li><a href="bronze.html" class="footer-link">Certificação Bronze</a></li>
+            <li><a href="prata.html" class="footer-link">Certificação Prata</a></li>
+            <li><a href="ouro.html" class="footer-link">Certificação Ouro</a></li>
+            <li><a href="suporte.html" class="footer-link">Suporte Técnico</a></li>
+          </ul>
+        </div>
+
+        <!-- Coluna 3: Recursos -->
+        <div>
+          <h3 class="footer-section-title">Recursos</h3>
+          <ul class="footer-links">
+            <li><a href="responsavel-pedagogico.html" class="footer-link">Guia do Responsável Pedagógico</a></li>
+            <li><a href="downloads/documentos-oficiais/playbook-ponto-focal.pdf" class="footer-link" download>Playbook do Ponto Focal (PDF)</a></li>
+            <li><a href="downloads/documentos-oficiais/matriz-formacao-blueberry.pdf" class="footer-link" download>Matriz de Formação (PDF)</a></li>
+            <li><a href="suporte.html#faq" class="footer-link">FAQ</a></li>
+          </ul>
+        </div>
+
+        <!-- Coluna 4: Contato -->
+        <div>
+          <h3 class="footer-section-title">Contato</h3>
+          <ul class="footer-links">
+            <li>
+              <a href="mailto:soporte.brasil@oneclick.es" class="footer-link">
+                <i class="far fa-envelope"></i> soporte.brasil@oneclick.es
+              </a>
+            </li>
+            <li>
+              <span style="color: var(--neutral-300);">
+                <i class="fas fa-building"></i> SESI - Serviço Social da Indústria
+              </span>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+
+      <!-- Footer Bottom -->
+      <div class="footer-bottom">
+        <p>&copy; 2024 SESI - Serviço Social da Indústria. Todos os direitos reservados.</p>
+        <p class="footer-credits">
+          Desenvolvido por 
+          <a href="https://oneclick.es/pt/" target="_blank" rel="noopener noreferrer" style="display: inline-flex; align-items: center; gap: 0.5rem;">
+            <img src="images/logos/logo-oneclick.png" alt="Oneclick" style="height: 20px; width: auto; vertical-align: middle;">
+          </a> 
+          | Blueberry Math
+        </p>
+      </div>
+
+    </div>
+  </footer>
+
+  <!-- ============================================
+       JAVASCRIPT
+       ============================================ -->
+  <script src="js/main.js"></script>
+  
+  <!-- Script específico da página Prata -->
+  <script>
+    // Verificar se Bronze foi completado
+    window.addEventListener('DOMContentLoaded', function() {
+      const hasBronze = BlueberryApp.hasCompletedLevel('bronze');
+      
+      if (hasBronze) {
+        // Mostrar conteúdo Prata
+        document.getElementById('requirement-check').style.display = 'none';
+        document.getElementById('prata-content').style.display = 'block';
+      } else {
+        // Manter aviso de requisito
+        document.getElementById('requirement-check').style.display = 'block';
+        document.getElementById('prata-content').style.display = 'none';
+      }
+    });
+  </script>
+
+</body>
+</html>

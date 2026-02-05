@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Blueberry Math + SESI</title>
+  
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  
+  <!-- Blueberry Backend -->
+  <script src="js/blueberry-backend.js"></script>
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: linear-gradient(135deg, #0052CC 0%, #003D99 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    
+    .login-container {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 8px 32px rgba(0, 82, 204, 0.3);
+      padding: 48px;
+      max-width: 450px;
+      width: 100%;
+    }
+    
+    .login-header {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    
+    .login-header h1 {
+      color: #0052CC;
+      font-size: 28px;
+      margin-bottom: 8px;
+      font-weight: 700;
+    }
+    
+    .login-header p {
+      color: #42526E;
+      font-size: 16px;
+      line-height: 1.6;
+    }
+    
+    .form-group {
+      margin-bottom: 24px;
+    }
+    
+    .form-group label {
+      display: block;
+      color: #172B4D;
+      font-weight: 600;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+    
+    .form-group input {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid #DFE1E6;
+      border-radius: 8px;
+      font-size: 16px;
+      transition: border-color 0.3s;
+    }
+    
+    .form-group input:focus {
+      outline: none;
+      border-color: #0052CC;
+      box-shadow: 0 0 0 3px rgba(0, 82, 204, 0.1);
+    }
+    
+    .btn {
+      width: 100%;
+      padding: 14px 24px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: inline-block;
+      text-align: center;
+    }
+    
+    .btn-primary {
+      background: #0052CC;
+      color: white;
+    }
+    
+    .btn-primary:hover {
+      background: #003D99;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 82, 204, 0.3);
+    }
+    
+    .btn-primary:disabled {
+      background: #DFE1E6;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+    
+    .btn-secondary {
+      background: #F4F5F7;
+      color: #172B4D;
+      margin-top: 12px;
+    }
+    
+    .btn-secondary:hover {
+      background: #DFE1E6;
+    }
+    
+    .login-footer {
+      text-align: center;
+      margin-top: 24px;
+      color: #6B778C;
+      font-size: 14px;
+    }
+    
+    .login-footer a {
+      color: #0052CC;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    
+    .login-footer a:hover {
+      text-decoration: underline;
+    }
+    
+    .alert {
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      font-weight: 500;
+      text-align: center;
+    }
+    
+    .alert-error {
+      background: #FFF5F5;
+      color: #DE350B;
+      border: 1px solid #FFBDAD;
+    }
+    
+    .alert-success {
+      background: #E3FCEF;
+      color: #00875A;
+      border: 1px solid #ABF3D4;
+    }
+    
+    .logo {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    
+    .logo img {
+      max-width: 200px;
+      height: auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <div class="logo">
+      <svg width="120" height="40" viewBox="0 0 120 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="120" height="40" rx="8" fill="#0052CC"/>
+        <text x="60" y="25" font-family="Inter" font-size="18" fill="white" text-anchor="middle">BLUEBERRY</text>
+      </svg>
+    </div>
+    
+    <div class="login-header">
+      <h1>Trilha de Formação</h1>
+      <p>Blueberry Math + SESI</p>
+    </div>
+    
+    <div id="alert-container"></div>
+    
+    <form id="login-form">
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" required placeholder="professor@sesi.com.br">
+      </div>
+      
+      <div class="form-group">
+        <label for="password">Senha</label>
+        <input type="password" id="password" name="password" required placeholder="Digite sua senha">
+      </div>
+      
+      <button type="submit" id="login-btn" class="btn btn-primary">
+        Entrar
+      </button>
+    </form>
+    
+    <button id="register-btn" class="btn btn-secondary">
+      Criar Nova Conta
+    </button>
+    
+    <div class="login-footer">
+      <a href="#" id="forgot-password">Esqueci minha senha</a>
+      <p style="margin-top: 16px; font-size: 13px;">
+        Trilha de Formação Blueberry Math + SESI
+      </p>
+    </div>
+  </div>
+  
+  <script>
+    // Aguardar carregamento do DOM
+    document.addEventListener('DOMContentLoaded', function() {
+      
+      const loginForm = document.getElementById('login-form');
+      const loginBtn = document.getElementById('login-btn');
+      const registerBtn = document.getElementById('register-btn');
+      const forgotPasswordLink = document.getElementById('forgot-password');
+      const alertContainer = document.getElementById('alert-container');
+      
+      // Função para exibir alertas
+      function showAlert(message, type = 'error') {
+        const alertClass = type === 'error' ? 'alert-error' : 'alert-success';
+        alertContainer.innerHTML = `
+          <div class="alert ${alertClass}">
+            ${message}
+          </div>
+        `;
+        
+        // Auto-ocultar após 5 segundos
+        setTimeout(() => {
+          alertContainer.innerHTML = '';
+        }, 5000);
+      }
+      
+      // Verificar se usuário já está logado
+      if (window.blueberry) {
+        const currentUser = window.blueberry.getCurrentUser();
+        if (currentUser) {
+          // Usuário já está logado, redirecionar
+          if (currentUser.role === 'admin') {
+            window.location.href = 'admin-dashboard.html';
+          } else {
+            window.location.href = 'dashboard.html';
+          }
+        }
+      }
+      
+      // Evento de submit do formulário
+      loginForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const email = document.getElementById('email').value.trim();
+        const password = document.getElementById('password').value;
+        
+        // Validação básica
+        if (!email || !password) {
+          showAlert('Por favor, preencha todos os campos.');
+          return;
+        }
+        
+        // Desabilitar botão durante o login
+        loginBtn.disabled = true;
+        loginBtn.textContent = 'Entrando...';
+        
+        try {
+          // Verificar se o backend está disponível
+          if (!window.blueberry) {
+            throw new Error('Sistema de autenticação não está disponível.');
+          }
+          
+          // Fazer login usando nosso backend
+          const user = await window.blueberry.login(email, password);
+          
+          // Login bem-sucedido
+          showAlert('Login realizado com sucesso! Redirecionando...', 'success');
+          
+          // Redirecionar baseado no role
+          setTimeout(() => {
+            if (user.role === 'admin') {
+              window.location.href = 'admin-dashboard.html';
+            } else {
+              window.location.href = 'dashboard.html';
+            }
+          }, 1000);
+          
+        } catch (error) {
+          console.error('Erro no login:', error);
+          
+          // Mensagens de erro amigáveis
+          let errorMessage = 'Erro ao fazer login. Tente novamente.';
+          
+          if (error.message.includes('Email inválido')) {
+            errorMessage = 'E-mail inválido. Verifique o formato.';
+          } else if (error.message.includes('Senha incorreta')) {
+            errorMessage = 'Senha incorreta. Tente novamente.';
+          } else if (error.message.includes('Usuário não encontrado')) {
+            errorMessage = 'Usuário não encontrado. Verifique o e-mail.';
+          } else if (error.message.includes('Muitas tentativas')) {
+            errorMessage = 'Muitas tentativas. Aguarde alguns minutos.';
+          }
+          
+          showAlert(errorMessage);
+          
+          // Reabilitar botão
+          loginBtn.disabled = false;
+          loginBtn.textContent = 'Entrar';
+        }
+      });
+      
+      // Botão Criar Nova Conta
+      registerBtn.addEventListener('click', function() {
+        // Redirecionar para página de registro (a ser criada)
+        alert('Funcionalidade de registro em desenvolvimento.\n\nPor enquanto, solicite uma conta ao administrador.');
+      });
+      
+      // Esqueci minha senha
+      forgotPasswordLink.addEventListener('click', async function(e) {
+        e.preventDefault();
+        
+        const email = document.getElementById('email').value.trim();
+        
+        if (!email) {
+          showAlert('Digite seu e-mail no campo acima para recuperar a senha.');
+          return;
+        }
+        
+        try {
+          if (!window.blueberry) {
+            throw new Error('Sistema não disponível.');
+          }
+          
+          // Nota: Recuperação de senha não está implementada no nosso backend
+          // Para agora, mostrar mensagem
+          showAlert('Funcionalidade de recuperação de senha em desenvolvimento. Contate o administrador.', 'error');
+          
+        } catch (error) {
+          console.error('Erro ao recuperar senha:', error);
+          showAlert('Erro ao processar solicitação.');
+        }
+      });
+      
+    });
+  </script>
+</body>
+</html>

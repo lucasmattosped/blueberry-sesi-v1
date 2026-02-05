@@ -1,0 +1,48 @@
+# Blueberry Math + SESI - Git Ignore
+
+# Sistema Operacional
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# Editores e IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.settings/
+*.sublime-project
+*.sublime-workspace
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Temporários
+*.tmp
+*.temp
+.cache/
+
+# Backups
+*.bak
+*.backup
+*~
+
+# Assets não versionados (remover conforme necessário)
+# images/*.png
+# images/*.jpg
+# images/*.svg
+
+# Documentos originais (PPTX, PDF) se necessário
+# *.pptx
+# *.pdf
+# *.docx

@@ -1,0 +1,1331 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - Blueberry Math + SESI</title>
+  
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  
+  <!-- Chart.js para gráficos -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <!-- Blueberry Backend -->
+  <script src="js/blueberry-backend.js"></script>
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: #F4F5F7;
+      color: #172B4D;
+    }
+    
+    .container {
+      display: flex;
+      min-height: 100vh;
+    }
+    
+    /* Sidebar */
+    .sidebar {
+      width: 280px;
+      background: #0052CC;
+      color: white;
+      padding: 24px 20px;
+      position: fixed;
+      height: 100vh;
+      overflow-y: auto;
+      box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+    }
+    
+    .sidebar-header {
+      padding-bottom: 24px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+      margin-bottom: 24px;
+    }
+    
+    .sidebar-header h1 {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    
+    .sidebar-header p {
+      font-size: 14px;
+      opacity: 0.8;
+    }
+    
+    .sidebar-menu {
+      list-style: none;
+    }
+    
+    .sidebar-menu li {
+      margin-bottom: 8px;
+    }
+    
+    .sidebar-menu a {
+      display: block;
+      padding: 12px 16px;
+      color: white;
+      text-decoration: none;
+      border-radius: 8px;
+      transition: background 0.3s;
+      font-weight: 500;
+    }
+    
+    .sidebar-menu a:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+    
+    .sidebar-menu a.active {
+      background: rgba(255, 255, 255, 0.2);
+    }
+    
+    .sidebar-footer {
+      margin-top: 40px;
+      padding-top: 24px;
+      border-top: 1px solid rgba(255, 255, 255, 0.2);
+      font-size: 14px;
+      opacity: 0.8;
+    }
+    
+    /* Main Content */
+    .main {
+      flex: 1;
+      margin-left: 280px;
+      padding: 32px;
+    }
+    
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 32px;
+    }
+    
+    .header h1 {
+      font-size: 28px;
+      font-weight: 700;
+    }
+    
+    .header-actions {
+      display: flex;
+      gap: 12px;
+    }
+    
+    .header-actions button {
+      padding: 12px 24px;
+      background: #0052CC;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    
+    .header-actions button:hover {
+      background: #003D99;
+    }
+    
+    .header-actions button.secondary {
+      background: #F4F5F7;
+      color: #172B4D;
+    }
+    
+    .header-actions button.secondary:hover {
+      background: #DFE1E6;
+    }
+    
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+    
+    .stat-card {
+      background: white;
+      padding: 24px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+    
+    .stat-card h3 {
+      color: #6B778C;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    
+    .stat-card .value {
+      font-size: 32px;
+      font-weight: 700;
+      color: #172B4D;
+    }
+    
+    .stat-card .trend {
+      color: #00875A;
+      font-size: 14px;
+      margin-top: 8px;
+    }
+    
+    .content-section {
+      background: white;
+      padding: 24px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      margin-bottom: 24px;
+    }
+    
+    .content-section h2 {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+    
+    .form-group {
+      margin-bottom: 20px;
+    }
+    
+    .form-group label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #172B4D;
+    }
+    
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 12px 16px;
+      border: 2px solid #DFE1E6;
+      border-radius: 8px;
+      font-size: 16px;
+      transition: border-color 0.3s;
+    }
+    
+    .form-group input:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: #0052CC;
+    }
+    
+    .btn-primary {
+      padding: 12px 24px;
+      background: #0052CC;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    
+    .btn-primary:hover {
+      background: #003D99;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 16px;
+      font-size: 14px;
+    }
+    
+    table th,
+    table td {
+      padding: 12px 16px;
+      text-align: left;
+      border-bottom: 1px solid #DFE1E6;
+    }
+    
+    table th {
+      font-weight: 600;
+      color: #42526E;
+      font-size: 14px;
+      background: #F4F5F7;
+    }
+    
+    table tr:hover {
+      background: #F4F5F7;
+    }
+    
+    .status-badge {
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    
+    .status-badge.completed {
+      background: #E3FCEF;
+      color: #00875A;
+    }
+    
+    .status-badge.pending {
+      background: #FFF0B3;
+      color: #FF991F;
+    }
+    
+    .status-badge.not-started {
+      background: #F4F5F7;
+      color: #6B778C;
+    }
+    
+    .status-badge.blocked {
+      background: #FFEBE6;
+      color: #DE350B;
+    }
+    
+    .progress-bar {
+      height: 6px;
+      background: #DFE1E6;
+      border-radius: 3px;
+      overflow: hidden;
+      margin-top: 4px;
+    }
+    
+    .progress-fill {
+      height: 100%;
+      background: #0052CC;
+      border-radius: 3px;
+    }
+    
+    .alert {
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+    }
+    
+    .alert-success {
+      background: #E3FCEF;
+      color: #00875A;
+      border: 1px solid #ABF3D4;
+    }
+    
+    .alert-error {
+      background: #FFF5F5;
+      color: #DE350B;
+      border: 1px solid #FFBDAD;
+    }
+    
+    .filters {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      align-items: flex-end;
+    }
+    
+    .filters select,
+    .filters input {
+      padding: 8px 12px;
+      border: 1px solid #DFE1E6;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+    
+    .filters .form-group {
+      margin-bottom: 0;
+    }
+    
+    .module-detail {
+      font-size: 12px;
+      color: #6B778C;
+      margin-top: 4px;
+    }
+    
+    .module-badge {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      margin-right: 4px;
+    }
+    
+    .module-badge.watched {
+      background: #00875A;
+    }
+    
+    .module-badge.not-watched {
+      background: #DFE1E6;
+    }
+    
+    .chart-container {
+      height: 300px;
+      margin: 24px 0;
+    }
+    
+    .level-section {
+      margin-bottom: 32px;
+    }
+    
+    .level-section h3 {
+      font-size: 18px;
+      margin-bottom: 16px;
+      color: #0052CC;
+    }
+    
+    .teachers-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 16px;
+    }
+    
+    .teacher-card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      border-left: 4px solid #0052CC;
+    }
+    
+    .teacher-card.completed-bronze {
+      border-left-color: #00875A;
+    }
+    
+    .teacher-card.completed-prata {
+      border-left-color: #6B778C;
+    }
+    
+    .teacher-card.completed-ouro {
+      border-left-color: #FF991F;
+    }
+    
+    .teacher-card h4 {
+      font-size: 16px;
+      margin-bottom: 8px;
+    }
+    
+    .teacher-card p {
+      font-size: 14px;
+      color: #6B778C;
+      margin-bottom: 4px;
+    }
+    
+    .teacher-card .progress {
+      margin-top: 12px;
+    }
+    
+    .teacher-card .progress-label {
+      font-size: 12px;
+      color: #42526E;
+      margin-bottom: 4px;
+    }
+    
+    .tabs {
+      display: flex;
+      border-bottom: 2px solid #DFE1E6;
+      margin-bottom: 24px;
+    }
+    
+    .tab {
+      padding: 12px 24px;
+      cursor: pointer;
+      font-weight: 600;
+      color: #6B778C;
+      border-bottom: 2px solid transparent;
+    }
+    
+    .tab.active {
+      color: #0052CC;
+      border-bottom-color: #0052CC;
+    }
+    
+    .tab-content {
+      display: none;
+    }
+    
+    .tab-content.active {
+      display: block;
+    }
+    
+    .detail-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 9999;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    
+    .detail-modal.active {
+      display: flex;
+    }
+    
+    .modal-content {
+      background: white;
+      border-radius: 12px;
+      max-width: 800px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 32px;
+    }
+    
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #DFE1E6;
+    }
+    
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      color: #6B778C;
+    }
+    
+    .module-list {
+      margin-top: 16px;
+    }
+    
+    .module-item {
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      background: #F4F5F7;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .module-item.watched {
+      background: #E3FCEF;
+      border-left: 4px solid #00875A;
+    }
+    
+    .module-item .icon {
+      font-size: 20px;
+      width: 24px;
+      text-align: center;
+    }
+    
+    .module-item .info h5 {
+      font-size: 16px;
+      margin-bottom: 4px;
+    }
+    
+    .module-item .info p {
+      font-size: 12px;
+      color: #6B778C;
+    }
+    
+    .module-item .date {
+      margin-left: auto;
+      font-size: 12px;
+      color: #6B778C;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <h1>📊 Blueberry Admin</h1>
+        <p>Trilha de Formação SESI</p>
+      </div>
+      
+      <ul class="sidebar-menu">
+        <li><a href="admin-dashboard.html" class="active">📈 Dashboard</a></li>
+        <li><a href="bronze.html">🥉 Bronze</a></li>
+        <li><a href="prata.html">🥈 Prata</a></li>
+        <li><a href="ouro.html">🥇 Ouro</a></li>
+        <li><a href="login.html" onclick="logout()">🚪 Sair</a></li>
+      </ul>
+      
+      <div class="sidebar-footer">
+        <p>Blueberry Math + SESI<br>© 2026</p>
+      </div>
+    </aside>
+    
+    <!-- Main Content -->
+    <main class="main">
+      <div class="header">
+        <h1>📈 Dashboard de Acompanhamento</h1>
+        <div class="header-actions">
+          <button class="secondary" onclick="exportToCSV()">📥 Exportar CSV</button>
+          <button onclick="showCreateUserModal()">➕ Criar Usuário</button>
+        </div>
+      </div>
+      
+      <div id="alert-container"></div>
+      
+      <!-- Stats Cards -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <h3>Total de Professores</h3>
+          <div class="value" id="total-users">0</div>
+        </div>
+        
+        <div class="stat-card">
+          <h3>ativos (30 dias)</h3>
+          <div class="value" id="active-users">0</div>
+          <div class="trend">últimos 30 dias</div>
+        </div>
+        
+        <div class="stat-card">
+          <h3>Bronze Concluído</h3>
+          <div class="value" id="bronze-completed">0</div>
+          <div class="trend" id="bronze-percent">0%</div>
+        </div>
+        
+        <div class="stat-card">
+          <h3>Prata Concluído</h3>
+          <div class="value" id="prata-completed">0</div>
+          <div class="trend" id="prata-percent">0%</div>
+        </div>
+        
+        <div class="stat-card">
+          <h3>Ouro Concluído</h3>
+          <div class="value" id="ouro-completed">0</div>
+          <div class="trend" id="ouro-percent">0%</div>
+        </div>
+        
+        <div class="stat-card">
+          <h3>Média de Progresso</h3>
+          <div class="value" id="avg-progress">0%</div>
+          <div class="trend">todos os níveis</div>
+        </div>
+      </div>
+      
+      <!-- Charts -->
+      <div class="content-section">
+        <h2>📊 Visão Geral</h2>
+        <div class="chart-container">
+          <canvas id="progressChart"></canvas>
+        </div>
+      </div>
+      
+      <!-- Filters and Tabs -->
+      <div class="content-section">
+        <div class="tabs">
+          <div class="tab active" onclick="switchTab('all')">📋 Todos os Professores</div>
+          <div class="tab" onclick="switchTab('bronze')">🥉 Bronze</div>
+          <div class="tab" onclick="switchTab('prata')">🥈 Prata</div>
+          <div class="tab" onclick="switchTab('ouro')">🥇 Ouro</div>
+          <div class="tab" onclick="switchTab('pending')">⏳ Em Andamento</div>
+        </div>
+        
+        <div class="filters">
+          <div class="form-group">
+            <label for="filter-school">Escola</label>
+            <select id="filter-school" onchange="applyFilters()">
+              <option value="">Todas as escolas</option>
+              <!-- Será preenchido dinamicamente -->
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="filter-search">Buscar</label>
+            <input type="text" id="filter-search" placeholder="Nome ou email..." oninput="applyFilters()">
+          </div>
+          
+          <div class="form-group">
+            <label for="filter-sort">Ordenar por</label>
+            <select id="filter-sort" onchange="applyFilters()">
+              <option value="name">Nome (A-Z)</option>
+              <option value="progress">Progresso (%)</option>
+              <option value="level">Nível concluído</option>
+              <option value="recent">Mais recente</option>
+            </select>
+          </div>
+        </div>
+        
+        <!-- Users List - All -->
+        <div id="tab-all" class="tab-content active">
+          <h2>📋 Todos os Professores</h2>
+          <div id="users-list-container">
+            <p>Carregando...</p>
+          </div>
+        </div>
+        
+        <!-- Users List - Bronze -->
+        <div id="tab-bronze" class="tab-content">
+          <h2>🥉 Certificação Bronze</h2>
+          <div id="bronze-list-container">
+            <p>Carregando...</p>
+          </div>
+        </div>
+        
+        <!-- Users List - Prata -->
+        <div id="tab-prata" class="tab-content">
+          <h2>🥈 Certificação Prata</h2>
+          <div id="prata-list-container">
+            <p>Carregando...</p>
+          </div>
+        </div>
+        
+        <!-- Users List - Ouro -->
+        <div id="tab-ouro" class="tab-content">
+          <h2>🥇 Certificação Ouro</h2>
+          <div id="ouro-list-container">
+            <p>Carregando...</p>
+          </div>
+        </div>
+        
+        <!-- Users List - Pending -->
+        <div id="tab-pending" class="tab-content">
+          <h2>⏳ Em Andamento</h2>
+          <div id="pending-list-container">
+            <p>Carregando...</p>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  
+  <!-- Create User Modal -->
+  <div id="create-user-modal" class="detail-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Criar Novo Usuário</h2>
+        <button class="modal-close" onclick="closeCreateUserModal()">×</button>
+      </div>
+      
+      <form id="create-user-form">
+        <div class="form-group">
+          <label for="new-email">Email *</label>
+          <input type="email" id="new-email" required placeholder="professor@sesi.com.br">
+        </div>
+        
+        <div class="form-group">
+          <label for="new-password">Senha *</label>
+          <input type="password" id="new-password" required placeholder="Mínimo 6 caracteres">
+        </div>
+        
+        <div class="form-group">
+          <label for="new-name">Nome Completo *</label>
+          <input type="text" id="new-name" required placeholder="João Silva">
+        </div>
+        
+        <div class="form-group">
+          <label for="new-role">Cargo *</label>
+          <select id="new-role" required>
+            <option value="teacher">Professor</option>
+            <option value="school_coordinator">Coordenador de Escola</option>
+            <option value="admin">Administrador</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label for="new-school-name">Escola</label>
+          <input type="text" id="new-school-name" placeholder="SESI São Paulo - Unidade Centro">
+        </div>
+        
+        <div style="display: flex; gap: 12px; margin-top: 24px;">
+          <button type="submit" class="btn-primary" style="flex: 1;">Criar Usuário</button>
+          <button type="button" onclick="closeCreateUserModal()" style="flex: 1; background: #F4F5F7; color: #172B4D;">Cancelar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  
+  <!-- Teacher Detail Modal -->
+  <div id="teacher-detail-modal" class="detail-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 id="detail-teacher-name">Detalhes do Professor</h2>
+        <button class="modal-close" onclick="closeTeacherDetailModal()">×</button>
+      </div>
+      
+      <div id="teacher-detail-content">
+        <p>Carregando...</p>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    let allUsers = [];
+    let currentTab = 'all';
+    let chart = null;
+    
+    // Proteger rota - verificar se é admin
+    document.addEventListener('DOMContentLoaded', async function() {
+      // Verificar se está logado
+      const currentUser = window.blueberry.getCurrentUser();
+      if (!currentUser) {
+        window.location.href = 'login.html';
+        return;
+      }
+      
+      // Verificar se é admin
+      if (!window.blueberry.isAdmin()) {
+        alert('Acesso restrito a administradores.');
+        window.location.href = 'dashboard.html';
+        return;
+      }
+      
+      // Carregar dados
+      await loadDashboardData();
+    });
+    
+    async function loadDashboardData() {
+      try {
+        // Carregar lista de usuários
+        allUsers = await window.blueberry.listAllUsers();
+        
+        // Atualizar estatísticas
+        updateStats(allUsers);
+        
+        // Atualizar gráficos
+        updateCharts(allUsers);
+        
+        // Preencher filtros
+        populateSchoolFilter(allUsers);
+        
+        // Mostrar listas
+        applyFilters();
+        
+      } catch (error) {
+        console.error('Erro ao carregar dados:', error);
+        showAlert('Erro ao carregar dados do dashboard.', 'error');
+      }
+    }
+    
+    function updateStats(users) {
+      const total = users.length;
+      const bronzeCompleted = users.filter(u => u.completedLevels?.bronze).length;
+      const prataCompleted = users.filter(u => u.completedLevels?.prata).length;
+      const ouroCompleted = users.filter(u => u.completedLevels?.ouro).length;
+      
+      // Calcular média de progresso
+      const totalProgress = users.reduce((sum, user) => {
+        const progress = user.progress || {};
+        const modulesWatched = Object.values(progress).filter(p => p.watched).length;
+        return sum + (modulesWatched / 11 * 100); // 11 módulos totais
+      }, 0);
+      
+      const avgProgress = total > 0 ? Math.round(totalProgress / total) : 0;
+      
+      // Usuários ativos (últimos 30 dias)
+      const thirtyDaysAgo = new Date();
+      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+      const activeUsers = users.filter(u => {
+        const updatedAt = u.updatedAt?.toDate?.() || new Date(u.createdAt);
+        return updatedAt >= thirtyDaysAgo;
+      }).length;
+      
+      document.getElementById('total-users').textContent = total;
+      document.getElementById('active-users').textContent = activeUsers;
+      document.getElementById('bronze-completed').textContent = bronzeCompleted;
+      document.getElementById('prata-completed').textContent = prataCompleted;
+      document.getElementById('ouro-completed').textContent = ouroCompleted;
+      
+      document.getElementById('bronze-percent').textContent = total > 0 ? Math.round((bronzeCompleted / total) * 100) + '%' : '0%';
+      document.getElementById('prata-percent').textContent = total > 0 ? Math.round((prataCompleted / total) * 100) + '%' : '0%';
+      document.getElementById('ouro-percent').textContent = total > 0 ? Math.round((ouroCompleted / total) * 100) + '%' : '0%';
+      
+      document.getElementById('avg-progress').textContent = avgProgress + '%';
+    }
+    
+    function updateCharts(users) {
+      const ctx = document.getElementById('progressChart').getContext('2d');
+      
+      const bronzeCompleted = users.filter(u => u.completedLevels?.bronze).length;
+      const prataCompleted = users.filter(u => u.completedLevels?.prata).length;
+      const ouroCompleted = users.filter(u => u.completedLevels?.ouro).length;
+      const notStarted = users.filter(u => !u.completedLevels?.bronze && Object.keys(u.progress || {}).length === 0).length;
+      const inProgress = users.length - bronzeCompleted - prataCompleted - ouroCompleted - notStarted;
+      
+      if (chart) {
+        chart.destroy();
+      }
+      
+      // CORREÇÃO PRINCIPAL: Adicionar "data:" antes do objeto e do array
+      chart = new Chart(ctx, {
+        type: 'bar',
+        data: {  // ← CORRIGIDO: adicionado "data:"
+          labels: ['Não Iniciado', 'Em Andamento', 'Bronze ✅', 'Prata ✅', 'Ouro ✅'],
+          datasets: [{
+            label: 'Número de Professores',
+            data: [notStarted, inProgress, bronzeCompleted, prataCompleted, ouroCompleted],  // ← CORRIGIDO: adicionado "data:"
+            backgroundColor: [
+              '#FFEBE6',
+              '#FFF0B3',
+              '#E3FCEF',
+              '#DEEBFF',
+              '#FFF5CC'
+            ],
+            borderColor: [
+              '#DE350B',
+              '#FF991F',
+              '#00875A',
+              '#0052CC',
+              '#FF991F'
+            ],
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              display: false
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  const total = users.length;
+                  const percent = Math.round((context.parsed.y / total) * 100);
+                  return `${context.parsed.y} professores (${percent}%)`;
+                }
+              }
+            }
+          },
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                stepSize: 1
+              }
+            }
+          }
+        }
+      });
+    }
+    
+    function populateSchoolFilter(users) {
+      const schools = [...new Set(users.map(u => u.schoolName).filter(s => s))];
+      const select = document.getElementById('filter-school');
+      
+      schools.forEach(school => {
+        const option = document.createElement('option');
+        option.value = school;
+        option.textContent = school;
+        select.appendChild(option);
+      });
+    }
+    
+    function applyFilters() {
+      const schoolFilter = document.getElementById('filter-school').value;
+      const searchFilter = document.getElementById('filter-search').value.toLowerCase();
+      const sortFilter = document.getElementById('filter-sort').value;
+      
+      let filteredUsers = [...allUsers];
+      
+      // Filtro por escola
+      if (schoolFilter) {
+        filteredUsers = filteredUsers.filter(u => u.schoolName === schoolFilter);
+      }
+      
+      // Filtro por busca
+      if (searchFilter) {
+        filteredUsers = filteredUsers.filter(u => 
+          u.name?.toLowerCase().includes(searchFilter) || 
+          u.email?.toLowerCase().includes(searchFilter)
+        );
+      }
+      
+      // Ordenação
+      filteredUsers.sort((a, b) => {
+        if (sortFilter === 'name') {
+          return (a.name || '').localeCompare(b.name || '');
+        } else if (sortFilter === 'progress') {
+          const getProgress = (u) => {
+            const progress = u.progress || {};
+            return Object.values(progress).filter(p => p.watched).length;
+          };
+          return getProgress(b) - getProgress(a);
+        } else if (sortFilter === 'level') {
+          const getLevel = (u) => {
+            if (u.completedLevels?.ouro) return 3;
+            if (u.completedLevels?.prata) return 2;
+            if (u.completedLevels?.bronze) return 1;
+            return 0;
+          };
+          return getLevel(b) - getLevel(a);
+        } else if (sortFilter === 'recent') {
+          const getDate = (u) => u.updatedAt?.toDate?.() || new Date(u.createdAt);
+          return getDate(b) - getDate(a);
+        }
+        return 0;
+      });
+      
+      // Mostrar listas por aba
+      showUsersList('all', filteredUsers);
+      showUsersList('bronze', filteredUsers.filter(u => u.completedLevels?.bronze));
+      showUsersList('prata', filteredUsers.filter(u => u.completedLevels?.prata));
+      showUsersList('ouro', filteredUsers.filter(u => u.completedLevels?.ouro));
+      showUsersList('pending', filteredUsers.filter(u => !u.completedLevels?.ouro && Object.keys(u.progress || {}).length > 0));
+    }
+    
+    function showUsersList(tab, users) {
+      const container = document.getElementById(`${tab}-list-container`) || 
+                       document.getElementById('users-list-container');
+      
+      if (users.length === 0) {
+        container.innerHTML = '<p>Nenhum professor encontrado.</p>';
+        return;
+      }
+      
+      let html = `
+        <table>
+          <thead>
+            <tr>
+              <th>Professor</th>
+              <th>Email</th>
+              <th>Escola</th>
+              <th>Bronze</th>
+              <th>Prata</th>
+              <th>Ouro</th>
+              <th>Progresso</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+      
+      users.forEach(user => {
+        const progress = user.progress || {};
+        
+        // Contar módulos assistidos por nível
+        const bronzeModules = ['bronze-modulo-1', 'bronze-modulo-2', 'bronze-modulo-3', 'bronze-modulo-4'];
+        const prataModules = ['prata-modulo-1', 'prata-modulo-2', 'prata-modulo-3'];
+        const ouroModules = ['ouro-modulo-1', 'ouro-modulo-2', 'ouro-modulo-3', 'ouro-modulo-4'];
+        
+        const bronzeWatched = bronzeModules.filter(m => progress[m]?.watched).length;
+        const bronzeTotal = bronzeModules.length;
+        const bronzePercent = Math.round((bronzeWatched / bronzeTotal) * 100);
+        
+        const prataWatched = prataModules.filter(m => progress[m]?.watched).length;
+        const prataTotal = prataModules.length;
+        const prataPercent = Math.round((prataWatched / prataTotal) * 100);
+        
+        const ouroWatched = ouroModules.filter(m => progress[m]?.watched).length;
+        const ouroTotal = ouroModules.length;
+        const ouroPercent = Math.round((ouroWatched / ouroTotal) * 100);
+        
+        html += `
+          <tr>
+            <td>
+              <strong>${user.name || 'Sem nome'}</strong>
+              <div style="font-size: 12px; color: #6B778C; margin-top: 4px;">
+                ${user.role === 'admin' ? '👑 Admin' : user.role === 'school_coordinator' ? '🎯 Coordenador' : '👨‍🏫 Professor'}
+              </div>
+            </td>
+            <td>${user.email}</td>
+            <td>${user.schoolName || '-'}</td>
+            <td>
+              <span class="status-badge ${user.completedLevels?.bronze ? 'completed' : bronzeWatched > 0 ? 'pending' : 'not-started'}">
+                ${user.completedLevels?.bronze ? '✅' : bronzeWatched > 0 ? `${bronzeWatched}/${bronzeTotal}` : '⏳'}
+              </span>
+            </td>
+            <td>
+              <span class="status-badge ${user.completedLevels?.prata ? 'completed' : user.completedLevels?.bronze ? 'pending' : 'blocked'}">
+                ${user.completedLevels?.prata ? '✅' : user.completedLevels?.bronze ? 'Disponível' : '🔒'}
+              </span>
+            </td>
+            <td>
+              <span class="status-badge ${user.completedLevels?.ouro ? 'completed' : user.completedLevels?.prata ? 'pending' : 'blocked'}">
+                ${user.completedLevels?.ouro ? '✅' : user.completedLevels?.prata ? 'Disponível' : '🔒'}
+              </span>
+            </td>
+            <td>
+              <div style="font-size: 11px; color: #6B778C; margin-bottom: 4px;">
+                ${bronzeWatched + prataWatched + ouroWatched}/11 módulos
+              </div>
+              <div class="progress-bar">
+                <div class="progress-fill" style="width: ${((bronzeWatched + prataWatched + ouroWatched) / 11 * 100).toFixed(0)}%"></div>
+              </div>
+            </td>
+            <td>
+              <button onclick="showTeacherDetail('${user.uid}')" style="padding: 6px 12px; font-size: 12px;" class="btn-primary">
+                👁️ Ver Detalhes
+              </button>
+            </td>
+          </tr>
+        `;
+      });
+      
+      html += `
+          </tbody>
+        </table>
+      `;
+      
+      container.innerHTML = html;
+    }
+    
+    function showTeacherDetail(uid) {
+      const user = allUsers.find(u => u.uid === uid);
+      if (!user) return;
+      
+      const progress = user.progress || {};
+      
+      const modules = {
+        bronze: [
+          { id: 'bronze-modulo-1', name: 'Módulo 1: Explicação Conceitual', duration: '25 min' },
+          { id: 'bronze-modulo-2', name: 'Módulo 2: Protocolo e Indicadores', duration: '30 min' },
+          { id: 'bronze-modulo-3', name: 'Módulo 3: Navegação na Plataforma', duration: '35 min' },
+          { id: 'bronze-modulo-4', name: 'Módulo 4: Rotina em Sala', duration: '20 min' }
+        ],
+        prata: [
+          { id: 'prata-modulo-1', name: 'Módulo 1: Aprofundamento Pedagógico', duration: '40 min' },
+          { id: 'prata-modulo-2', name: 'Módulo 2: Análise de Dados', duration: '35 min' },
+          { id: 'prata-modulo-3', name: 'Módulo 3: Intervenções Estruturadas', duration: '30 min' }
+        ],
+        ouro: [
+          { id: 'ouro-modulo-1', name: 'Módulo 1: Liderança Pedagógica', duration: '45 min' },
+          { id: 'ouro-modulo-2', name: 'Módulo 2: Formação de Multiplicadores', duration: '40 min' },
+          { id: 'ouro-modulo-3', name: 'Módulo 3: Gestão de Projetos', duration: '35 min' },
+          { id: 'ouro-modulo-4', name: 'Módulo 4: Avaliação de Impacto', duration: '30 min' }
+        ]
+      };
+      
+      let html = `
+        <div style="margin-bottom: 24px;">
+          <h3 style="color: #0052CC; margin-bottom: 8px;">${user.name}</h3>
+          <p style="color: #6B778C; margin-bottom: 4px;">${user.email}</p>
+          <p style="color: #6B778C;">${user.schoolName || 'Escola não definida'}</p>
+        </div>
+        
+        <div style="background: #F4F5F7; padding: 16px; border-radius: 8px; margin-bottom: 24px;">
+          <h4 style="margin-bottom: 12px; color: #172B4D;">📊 Resumo do Progresso</h4>
+          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
+            <div>
+              <div style="font-size: 12px; color: #6B778C; margin-bottom: 4px;">Bronze</div>
+              <div style="font-size: 24px; font-weight: 700; color: ${user.completedLevels?.bronze ? '#00875A' : '#6B778C'};">
+                ${user.completedLevels?.bronze ? '✅ Concluído' : 'Em andamento'}
+              </div>
+            </div>
+            <div>
+              <div style="font-size: 12px; color: #6B778C; margin-bottom: 4px;">Prata</div>
+              <div style="font-size: 24px; font-weight: 700; color: ${user.completedLevels?.prata ? '#00875A' : '#6B778C'};">
+                ${user.completedLevels?.prata ? '✅ Concluído' : user.completedLevels?.bronze ? 'Disponível' : '🔒 Bloqueado'}
+              </div>
+            </div>
+            <div>
+              <div style="font-size: 12px; color: #6B778C; margin-bottom: 4px;">Ouro</div>
+              <div style="font-size: 24px; font-weight: 700; color: ${user.completedLevels?.ouro ? '#00875A' : '#6B778C'};">
+                ${user.completedLevels?.ouro ? '✅ Concluído' : user.completedLevels?.prata ? 'Disponível' : '🔒 Bloqueado'}
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      
+      // Módulos Bronze
+      html += `
+        <div class="level-section">
+          <h3>🥉 Certificação Bronze</h3>
+          <div class="module-list">
+      `;
+      
+      modules.bronze.forEach(module => {
+        const watched = progress[module.id]?.watched;
+        const watchedAt = progress[module.id]?.watchedAt;
+        html += `
+          <div class="module-item ${watched ? 'watched' : ''}">
+            <div class="icon">${watched ? '✅' : '⏳'}</div>
+            <div class="info">
+              <h5>${module.name}</h5>
+              <p>${module.duration}</p>
+            </div>
+            ${watchedAt ? `<div class="date">${new Date(watchedAt).toLocaleDateString('pt-BR')}</div>` : ''}
+          </div>
+        `;
+      });
+      
+      html += `
+          </div>
+        </div>
+      `;
+      
+      // Módulos Prata
+      if (user.completedLevels?.bronze) {
+        html += `
+          <div class="level-section">
+            <h3>🥈 Certificação Prata</h3>
+            <div class="module-list">
+        `;
+        
+        modules.prata.forEach(module => {
+          const watched = progress[module.id]?.watched;
+          const watchedAt = progress[module.id]?.watchedAt;
+          html += `
+            <div class="module-item ${watched ? 'watched' : ''}">
+              <div class="icon">${watched ? '✅' : '⏳'}</div>
+              <div class="info">
+                <h5>${module.name}</h5>
+                <p>${module.duration}</p>
+              </div>
+              ${watchedAt ? `<div class="date">${new Date(watchedAt).toLocaleDateString('pt-BR')}</div>` : ''}
+            </div>
+          `;
+        });
+        
+        html += `
+            </div>
+          </div>
+        `;
+      }
+      
+      // Módulos Ouro
+      if (user.completedLevels?.prata) {
+        html += `
+          <div class="level-section">
+            <h3>🥇 Certificação Ouro</h3>
+            <div class="module-list">
+        `;
+        
+        modules.ouro.forEach(module => {
+          const watched = progress[module.id]?.watched;
+          const watchedAt = progress[module.id]?.watchedAt;
+          html += `
+            <div class="module-item ${watched ? 'watched' : ''}">
+              <div class="icon">${watched ? '✅' : '⏳'}</div>
+              <div class="info">
+                <h5>${module.name}</h5>
+                <p>${module.duration}</p>
+              </div>
+              ${watchedAt ? `<div class="date">${new Date(watchedAt).toLocaleDateString('pt-BR')}</div>` : ''}
+            </div>
+          `;
+        });
+        
+        html += `
+            </div>
+          </div>
+        `;
+      }
+      
+      document.getElementById('detail-teacher-name').textContent = user.name;
+      document.getElementById('teacher-detail-content').innerHTML = html;
+      document.getElementById('teacher-detail-modal').classList.add('active');
+    }
+    
+    function closeTeacherDetailModal() {
+      document.getElementById('teacher-detail-modal').classList.remove('active');
+    }
+    
+    function switchTab(tab) {
+      currentTab = tab;
+      
+      // Atualizar tabs
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      event.target.classList.add('active');
+      
+      // Atualizar conteúdo
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      document.getElementById(`tab-${tab}`).classList.add('active');
+    }
+    
+    function exportToCSV() {
+      const csvContent = [
+        ['Nome', 'Email', 'Escola', 'Cargo', 'Bronze Concluído', 'Prata Concluído', 'Ouro Concluído', 'Módulos Bronze Assistidos', 'Módulos Prata Assistidos', 'Módulos Ouro Assistidos', 'Data de Cadastro'],
+        ...allUsers.map(user => {
+          const progress = user.progress || {};
+          
+          const bronzeWatched = ['bronze-modulo-1', 'bronze-modulo-2', 'bronze-modulo-3', 'bronze-modulo-4']
+            .filter(m => progress[m]?.watched).length;
+          
+          const prataWatched = ['prata-modulo-1', 'prata-modulo-2', 'prata-modulo-3']
+            .filter(m => progress[m]?.watched).length;
+          
+          const ouroWatched = ['ouro-modulo-1', 'ouro-modulo-2', 'ouro-modulo-3', 'ouro-modulo-4']
+            .filter(m => progress[m]?.watched).length;
+          
+          return [
+            user.name || '',
+            user.email,
+            user.schoolName || '',
+            user.role === 'admin' ? 'Admin' : user.role === 'school_coordinator' ? 'Coordenador' : 'Professor',
+            user.completedLevels?.bronze ? 'Sim' : 'Não',
+            user.completedLevels?.prata ? 'Sim' : 'Não',
+            user.completedLevels?.ouro ? 'Sim' : 'Não',
+            bronzeWatched,
+            prataWatched,
+            ouroWatched,
+            user.createdAt ? new Date(user.createdAt).toLocaleDateString('pt-BR') : ''
+          ];
+        })
+      ].map(row => row.map(cell => `"${cell}"`).join(',')).join('\n');
+      
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', `relatorio-professores-${new Date().toISOString().split('T')[0]}.csv`);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      window.blueberry.showAlert('Relatório exportado com sucesso!', 'success');
+    }
+    
+    function showCreateUserModal() {
+      document.getElementById('create-user-modal').classList.add('active');
+    }
+    
+    function closeCreateUserModal() {
+      document.getElementById('create-user-modal').classList.remove('active');
+      document.getElementById('create-user-form').reset();
+    }
+    
+    document.getElementById('create-user-form').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const userData = {
+        email: document.getElementById('new-email').value,
+        password: document.getElementById('new-password').value,
+        name: document.getElementById('new-name').value,
+        role: document.getElementById('new-role').value,
+        schoolName: document.getElementById('new-school-name').value,
+        schoolId: '' // Pode ser preenchido depois
+      };
+      
+      try {
+        await window.blueberry.createUser(userData);
+        window.blueberry.showAlert('Usuário criado com sucesso!', 'success');
+        closeCreateUserModal();
+        await loadDashboardData();
+      } catch (error) {
+        console.error('Erro ao criar usuário:', error);
+        window.blueberry.showAlert(error.message || 'Erro ao criar usuário.', 'error');
+      }
+    });
+    
+    function logout() {
+      window.blueberry.logout().then(() => {
+        window.location.href = 'login.html';
+      });
+    }
+    
+    function showAlert(message, type = 'error') {
+      const container = document.getElementById('alert-container');
+      const alertClass = type === 'error' ? 'alert-error' : 'alert-success';
+      
+      container.innerHTML = `
+        <div class="alert ${alertClass}">
+          ${message}
+        </div>
+      `;
+      
+      setTimeout(() => {
+        container.innerHTML = '';
+      }, 5000);
+    }
+  </script>
+</body>
+</html>
