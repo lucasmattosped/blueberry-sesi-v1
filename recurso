@@ -344,15 +344,13 @@
         </div>
 
         <!-- Coluna 3: Recursos -->
-        <div>
-          <h3 class="footer-section-title">Recursos</h3>
-          <ul class="footer-links">
-            <li><a href="responsavel-pedagogico.html" class="footer-link">Guia do Responsável Pedagógico</a></li>
-            <li><a href="downloads/documentos-oficiais/playbook-ponto-focal.pdf" class="footer-link" download>Playbook do Ponto Focal (PDF)</a></li>
-            <li><a href="downloads/documentos-oficiais/matriz-formacao-blueberry.pdf" class="footer-link" download>Matriz de Formação (PDF)</a></li>
-            <li><a href="suporte.html#faq" class="footer-link">FAQ</a></li>
-          </ul>
-        </div>
+      <!-- Coluna 3: Recursos -->
+<div>
+  <h3 class="footer-section-title">Recursos</h3>
+  <ul class="footer-links">
+    <li><a href="suporte.html#faq" class="footer-link">FAQ</a></li>
+  </ul>
+</div>
 
         <!-- Coluna 4: Contato -->
         <div>
